@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    @media print {
+        .no-print, .sidebar, .navbar, .btn, .breadcrumb { display: none !important; }
+        .container-fluid { width: 100%; margin: 0; padding: 0; }
+        main { margin-left: 0 !important; width: 100% !important; }
+        .card { border: 1px solid #eee !important; box-shadow: none !important; }
+    }
+    .progress { background-color: #e9ecef !important; border-radius: 10px; height: 12px; }
+    .stat-card { transition: transform 0.2s; border-radius: 15px; }
+    .stat-card:hover { transform: translateY(-5px); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pt-3 pb-2 mb-3 border-bottom d-flex justify-content-between align-items-center">
+    <div>
+        <nav aria-label="breadcrumb" class="no-print">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a href="#">Reportes</a></li>
+                <li class="breadcrumb-item active">Mensual Integral</li>
+            </ol>
+        </nav>
+        <h1 class="h2">Resumen Mensual: <span class="text-primary">{{ mes }}</span></h1>
+    </div>
+
+    <div class="no-print">
+        <button class="btn btn-outline-danger shadow-sm" onclick="window.print()">
+            <i class="bi bi-file-earmark-pdf me-1"></i> Exportar PDF
+        </button>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card stat-card bg-success text-white border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-uppercase small fw-bold">Ingresos Totales</h6>
+                        <h2 class="mb-0">${{ total_ingresos|floatformat:2 }}</h2>
+                    </div>
+                    <i class="bi bi-graph-up-arrow fs-1 opacity-50"></i>
+                </div>
+                <small class="opacity-75">(Cuotas + Donaciones)</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card bg-danger text-white border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-uppercase small fw-bold">Egresos Totales</h6>
+                        <h2 class="mb-0">${{ total_egresos|floatformat:2 }}</h2>
+                    </div>
+                    <i class="bi bi-cart-dash fs-1 opacity-50"></i>
+                </div>
+                <small class="opacity-75">(Gastos operativos)</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card {% if balance_neto >= 0 %}bg-primary{% else %}bg-warning{% endif %} text-white border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <h6 class="text-uppercase small fw-bold">Balance Neto</h6>
+                        <h2 class="mb-0">${{ balance_neto|floatformat:2 }}</h2>
+                    </div>
+                    <i class="bi bi-wallet2 fs-1 opacity-50"></i>
+                </div>
+                <small class="opacity-75">Saldo en caja del mes</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 mb-4">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <h5 class="mb-0 text-dark fw-bold">Detalle de Beneficiarios</h5>
+        <span class="badge bg-light text-dark border no-print">Base: 20 días hábiles</span>
+    </div>
+
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light text-secondary">
+                    <tr>
+                        <th class="ps-4">Beneficiario / CI</th>
+                        <th class="text-center">Asistencia</th>
+                        <th class="text-center">Cuota</th>
+                        <th class="text-center">Pagado</th>
+                        <th class="text-end pe-4">Estado de Cuenta</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in listado %}
+                    <tr>
+                        <td class="ps-4">
+                            <div class="fw-bold text-dark">{{ item.nombre }}</div>
+                            <small class="text-muted">{{ item.ci }}</small>
+                        </td>
+
+                        <td class="text-center">
+                            <span class="d-block fw-bold">{{ item.asistencias }} días</span>
+                            <div class="progress mt-1 mx-auto" style="width: 100px;">
+                                <div class="progress-bar {% if item.porcentaje >= 80 %}bg-success{% elif item.porcentaje >= 50 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                    role="progressbar" style="width: {{ item.porcentaje }}%"></div>
+                            </div>
+                        </td>
+
+                        <td class="text-center text-muted">${{ item.cuota_mensual }}</td>
+
+                        <td class="text-center fw-bold text-success">
+                            ${{ item.pago_realizado }}
+                        </td>
+
+                        <td class="text-end pe-4">
+                            {% if item.saldo <= 0 %}
+                                <span class="badge bg-success-soft text-success">
+                                    <i class="bi bi-check-circle-fill"></i> Al día
+                                </span>
+                            {% else %}
+                                <span class="badge bg-danger-soft text-danger">
+                                    Pendiente: ${{ item.saldo }}
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5 text-muted">
+                            <i class="bi bi-folder-x fs-1"></i>
+                            <p>No hay datos registrados para este mes.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row no-print mb-5">
+    <div class="col-12 text-center">
+        <div class="btn-group shadow-sm">
+            <a href="/reportes/asistencia/{{ actual_year }}/{{ actual_month|add:-1 }}/" class="btn btn-white border">
+                <i class="bi bi-chevron-left"></i> Mes Anterior
+            </a>
+            <button class="btn btn-white border fw-bold" disabled>
+                {{ mes }}
+            </button>
+            <a href="/reportes/asistencia/{{ actual_year }}/{{ actual_month|add:1 }}/" class="btn btn-white border">
+                Mes Siguiente <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

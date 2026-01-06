@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="pt-3 pb-2 mb-3 border-bottom d-flex justify-content-between align-items-center">
+    <h1 class="h2">
+        <i class="bi bi-person-plus-fill me-2"></i>
+        {% if editando %}Editar Beneficiario{% else %}Registrar Nuevo Beneficiario{% endif %}
+    </h1>
+    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Volver
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-9">
+        {# VERIFICAMOS SI EL USUARIO TIENE PERMISO PARA CREAR O EDITAR #}
+        {% if perms.beneficiarios.add_beneficiary or perms.beneficiarios.change_beneficiary %}
+        
+        <form method="post" class="needs-validation">
+            {% csrf_token %}
+            
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-primary text-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-person-bounding-box me-2"></i>Datos del Niño/a</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Nombres</label>
+                            {{ form.nombre }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Apellidos</label>
+                            {{ form.apellidos }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Cédula (CI)</label>
+                            {{ form.ci }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Fecha de Nacimiento</label>
+                            {{ form.nacimiento }}
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Nacionalidad</label>
+                            {{ form.nacionalidad }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label fw-bold">Dirección Domiciliaria</label>
+                            {{ form.direccion }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-4 border-start border-info border-5">
+                <div class="card-header bg-info text-white py-3">
+                    <h5 class="mb-0"><i class="bi bi-book-half me-2"></i>Información Escolar</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label class="form-label fw-bold">Institución Educativa</label>
+                            {{ enroll_form.escuela }}
+                            <div class="form-text">Nombre de la escuela o colegio.</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-bold">Grado/Curso</label>
+                            {{ enroll_form.grado }}
+                            <div class="form-text">Ej: 5to de Básica.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm border-0 mb-4">
+                <div class="card-header bg-white py-3">
+                    <h5 class="mb-0 fw-bold text-primary">Asignación y Cuota</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Representante Legal</label>
+                            <div class="input-group">
+                                {{ form.representative }}
+                                {# SOLO MOSTRAR BOTÓN "+" SI TIENE PERMISO PARA CREAR REPRESENTANTES #}
+                                {% if perms.beneficiarios.add_representative %}
+                                <a href="{% url 'crear_representante' %}" class="btn btn-success" title="Crear nuevo representante">
+                                    <i class="bi bi-plus-lg"></i>
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-bold">Cuota Mensual</label>
+                            <div class="input-group">
+                                <span class="input-group-text">$</span>
+                                {{ form.monthly_fee }}
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label fw-bold">Teléfono</label>
+                            {{ form.contacto }}
+                        </div>
+                    </div>
+                    <div class="form-check form-switch mt-2">
+                        {{ form.active }}
+                        <label class="form-check-label fw-bold">¿Beneficiario activo en el sistema?</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end mb-5 gap-3">
+                <a href="{% url 'dashboard' %}" class="btn btn-light btn-lg border px-4">Cancelar</a>
+                <button type="submit" class="btn btn-primary btn-lg px-5 shadow">
+                    <i class="bi bi-check-circle me-2"></i>
+                    {% if editando %}Actualizar Datos{% else %}Guardar Beneficiario{% endif %}
+                </button>
+            </div>
+        </form>
+
+        {% else %}
+        {# MENSAJE SI EL USUARIO NO TIENE PERMISOS PARA ESTAR AQUÍ #}
+        <div class="alert alert-warning shadow-sm border-0 py-4 text-center">
+            <i class="bi bi-exclamation-triangle fs-1 d-block mb-3"></i>
+            <h4>Acceso Restringido</h4>
+            <p>No tienes permisos suficientes para crear o modificar beneficiarios. Tu cuenta es de <strong>Solo Lectura</strong>.</p>
+            <a href="{% url 'dashboard' %}" class="btn btn-primary mt-3">Volver al Inicio</a>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

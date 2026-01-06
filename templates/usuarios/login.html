@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
+    <div class="card shadow-lg border-0" style="max-width: 900px; width: 100%; border-radius: 15px; overflow: hidden;">
+        <div class="row g-0">
+            <div class="col-md-6 d-none d-md-block">
+                <img src="https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070" 
+                     class="img-fluid h-100" style="object-fit: cover;" alt="Niños">
+            </div>
+            <div class="col-md-6 p-5 bg-white">
+                <div class="text-center mb-4">
+                    <h3 class="fw-bold text-primary">Asociación Comunitaria de Desarrollo Integral</h3>
+                    <p class="text-muted small">Ingrese para gestionar la plataforma</p>
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
+                            {{ form.username }}
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock"></i></span>
+                            {{ form.password }}
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mb-4">
+                        <div class="form-check small">
+                            <input type="checkbox" class="form-check-input" id="remember">
+                            <label class="form-check-label" for="remember">Recordarme</label>
+                        </div>
+                        <a href="#" class="small text-decoration-none">¿Olvidó su contraseña?</a>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Iniciar sesión</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Ocultar la barra de navegación lateral en el login si es necesario */
+    nav, .sidebar { display: none !important; }
+    body { background-color: #f8f9fa; }
+</style>
+{% endblock %}

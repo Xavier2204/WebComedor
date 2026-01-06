@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow border-0">
+                <div class="card-header {% if transaccion.tipo == 'INGRESO' %}bg-success{% else %}bg-danger{% endif %} text-white">
+                    <h4 class="mb-0">Editar {{ transaccion.tipo|title }}</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {{ form.tipo }}
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Descripción</label>
+                            {{ form.descripcion }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Categoría</label>
+                            {{ form.categoria }}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Monto ($)</label>
+                            {{ form.monto }}
+                        </div>
+
+                        <hr>
+                        
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-primary px-4 shadow-sm">
+                                <i class="bi bi-save me-2"></i>Guardar Cambios
+                            </button>
+                            <a href="{% url 'finanzas' %}" class="btn btn-outline-secondary px-4">
+                                Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

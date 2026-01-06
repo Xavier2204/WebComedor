@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="pt-3 pb-2 mb-3 border-bottom d-flex justify-content-between align-items-center">
+    <h1 class="h2">Gestión de Pagos Mensuales</h1>
+    <a href="{% url 'dashboard' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Volver
+    </a>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Beneficiario</th>
+                        <th>Cuota Mensual</th>
+                        <th>Estado Mes Actual</th>
+                        {# COLUMNA DE ACCIÓN PROTEGIDA #}
+                        {% if perms.pagos.add_pagocuota or perms.pagos.delete_pagocuota %}
+                        <th class="text-center">Acción</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for niño in niños %}
+                    <tr>
+                        <td class="ps-4 fw-bold">{{ niño.apellidos }}, {{ niño.nombre }}</td>
+                        <td><span class="text-muted">$</span>{{ niño.monthly_fee }}</td>
+                        <td>
+                            {% if niño.tiene_pago_mes_actual %}
+                                <span class="badge bg-success-subtle text-success border border-success-subtle px-3 text-uppercase">Pagado</span>
+                            {% else %}
+                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 text-uppercase">Pendiente</span>
+                            {% endif %}
+                        </td>
+                        
+                        {# BOTONES DE ACCIÓN PROTEGIDOS #}
+                        {% if perms.pagos.add_pagocuota or perms.pagos.delete_pagocuota %}
+                        <td class="text-center">
+                            {% if not niño.tiene_pago_mes_actual %}
+                                {% if perms.pagos.add_pagocuota %}
+                                    <a href="{% url 'registrar_pago' niño.id %}" class="btn btn-sm btn-warning shadow-sm fw-bold">
+                                        <i class="bi bi-cash"></i> Registrar Pago
+                                    </a>
+                                {% else %}
+                                    <small class="text-muted italic">Solo lectura</small>
+                                {% endif %}
+                            {% else %}
+                                {% if perms.pagos.delete_pagocuota %}
+                                    <a href="{% url 'desmarcar_pago' niño.id %}" class="btn btn-sm btn-outline-danger" 
+                                    onclick="return confirm('¿Estás seguro de que deseas anular este pago? Se eliminará también de contabilidad.')">
+                                        <i class="bi bi-x-circle"></i> Anular Pago
+                                    </a>
+                                {% else %}
+                                    <small class="text-muted"><i class="bi bi-shield-lock"></i></small>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        {% endif %}
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center py-4 text-muted">
+                            No hay beneficiarios registrados.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

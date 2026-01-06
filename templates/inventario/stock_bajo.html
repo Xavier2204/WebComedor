@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-danger">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>Alertas de Reabastecimiento
+        </h2>
+        <a href="{% url 'panel_inventario' %}" class="btn btn-secondary">
+            <i class="bi bi-arrow-left"></i> Volver al Inventario
+        </a>
+    </div>
+
+    <div class="card shadow border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th class="ps-4">Producto</th>
+                            <th class="text-center">Stock Actual</th>
+                            <th class="text-center">Mínimo Requerido</th>
+                            <th class="text-end pe-4">Sugerencia</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for producto in alertas %}
+                        <tr class="table-danger">
+                            <td class="ps-4 fw-bold">{{ producto.nombre }}</td>
+                            <td class="text-center">{{ producto.cantidad_actual }} {{ producto.unidad_medida }}</td>
+                            <td class="text-center text-muted">{{ producto.cantidad_minima }}</td>
+                            <td class="text-end pe-4">
+                                <span class="badge bg-danger">Comprar urgente</span>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" class="text-center py-5">
+                                <i class="bi bi-check-circle text-success fs-1"></i>
+                                <p class="mt-2">Todo el stock está por encima del mínimo.</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

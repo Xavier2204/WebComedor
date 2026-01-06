@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Panel de Control</h1>
+    <div class="d-flex align-items-center">
+        <span class="text-muted me-3">
+            <i class="bi bi-person-circle"></i> Hola, <strong>{{ user.username|title }}</strong>
+        </span>
+        <a href="{% url 'logout' %}" class="btn btn-sm btn-outline-danger">
+            <i class="bi bi-box-arrow-right"></i> Salir
+        </a>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card shadow-sm p-3 border-0 border-start border-primary border-5 h-100">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-check-circle-fill text-primary fs-3 me-3"></i>
+                <div>
+                    <h6 class="mb-0 text-muted">Asistencia</h6>
+                    <h4 class="mb-0">{{ presentes }} presentes</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <a href="{% url 'gestion_pagos' %}" class="text-decoration-none text-dark">
+            <div class="card shadow-sm p-3 border-0 border-start border-warning border-5 h-100">
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-currency-dollar text-warning fs-3 me-3"></i>
+                    <div>
+                        <h6 class="mb-0 text-muted">Pendientes</h6>
+                        <h4 class="mb-0">{{ pendientes_conteo }} pagos</h4>
+                    </div>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm p-3 border-0 border-start border-success border-5 h-100">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-graph-up-arrow text-success fs-3 me-3"></i>
+                <div>
+                    <h6 class="mb-0 text-muted">Ingresos</h6>
+                    <h4 class="mb-0">${{ ingresos|floatformat:2 }}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card shadow-sm p-3 border-0 border-start border-danger border-5 h-100">
+            <div class="d-flex align-items-center">
+                <i class="bi bi-graph-down-arrow text-danger fs-3 me-3"></i>
+                <div>
+                    <h6 class="mb-0 text-muted">Egresos</h6>
+                    <h4 class="mb-0">${{ egresos|floatformat:2 }}</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12"> 
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
+                <span class="fw-bold"><i class="bi bi-calendar-check me-2"></i>Control Diario de Asistencia</span>
+                <span class="badge bg-light text-dark px-3 py-2">{{ hoy }}</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0 align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th class="ps-3">ID</th>
+                                <th>Nombre del Beneficiario</th>
+                                <th>Estado</th>
+                                <th class="text-center">Asistencia Hoy</th>
+                                <th class="text-center">Información</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for niño in niños_listado %}
+                            <tr>
+                                <td class="ps-3 fw-bold text-muted">{{ niño.id }}</td>
+                                <td>{{ niño.apellidos }}, {{ niño.nombre }}</td>
+                                <td>
+                                    <span class="badge {% if niño.active %}bg-success-subtle text-success border-success{% else %}bg-danger-subtle text-danger border-danger{% endif %} border">
+                                        {% if niño.active %}Activo{% else %}Inactivo{% endif %}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    {% if niño.asistio_hoy %}
+                                        <a href="{% url 'desmarcar_asistencia' niño.id %}" class="text-success fw-bold text-decoration-none">
+                                            <i class="bi bi-check-circle-fill fs-5"></i>
+                                            <small class="d-block text-muted" style="font-size: 0.65rem;">Presente</small>
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'marcar_asistencia' niño.id %}" class="btn btn-sm btn-primary px-3 shadow-sm">
+                                            <i class="bi bi-person-check"></i> Marcar
+                                        </a>
+                                    {% endif %}
+                                </td>
+                                <td class="text-center">
+                                    <a href="{% url 'perfil_beneficiario' niño.id %}" class="btn btn-sm btn-info text-white shadow-sm px-3">
+                                        <i class="bi bi-eye-fill"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="5" class="text-center py-4 text-muted">No hay registros.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer bg-white py-3">
+                <a href="{% url 'gestion_asistencia' %}" class="btn btn-outline-success btn-sm w-100">
+                    Ver Gestión Completa
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4 mb-5">
+    <div class="col-md-4 ms-auto">
+        <div class="card shadow-sm border-0 border-top border-success border-5">
+            <div class="card-body py-2">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-muted fw-bold">Balance de Caja:</span>
+                    <span class="h4 mb-0 {% if balance < 0 %}text-danger{% else %}text-success{% endif %}">
+                        ${{ balance|floatformat:2 }}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

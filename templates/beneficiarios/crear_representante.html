@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="pt-3 pb-2 mb-3 border-bottom d-flex justify-content-between align-items-center">
+    <h1 class="h2">Registrar Nuevo Representante</h1>
+    <a href="{% url 'crear_beneficiario' %}" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Volver
+    </a>
+</div>
+
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        {# VERIFICACIÓN DE PERMISO PARA AÑADIR REPRESENTANTE #}
+        {% if perms.beneficiarios.add_representative %}
+        
+        <div class="card shadow-sm border-0 card-pagos">
+            <div class="card-header bg-white py-3">
+                <h5 class="mb-0 fw-bold text-warning">Datos del Tutor</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Nombre Completo</label>
+                        {{ form.nombre }}
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Cédula/DNI</label>
+                            {{ form.ci }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Nacionalidad</label>
+                            {{ form.nacionalidad }}
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Ocupación/Empleo</label>
+                            {{ form.empleo }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold">Ingresos Mensuales</label>
+                            {{ form.ingresos }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">¿Con quién vive el niño?</label>
+                        {{ form.convivencia }}
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-end">
+                        <a href="{% url 'crear_beneficiario' %}" class="btn btn-secondary me-2">Cancelar</a>
+                        <button type="submit" class="btn btn-warning px-4 fw-bold">
+                            <i class="bi bi-save me-2"></i>Guardar Representante
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% else %}
+        {# MENSAJE PARA USUARIOS SIN PERMISO #}
+        <div class="alert alert-danger shadow-sm border-0 py-4 text-center">
+            <i class="bi bi-shield-lock fs-1 d-block mb-3"></i>
+            <h4>Acceso Denegado</h4>
+            <p>No tienes permisos para registrar nuevos representantes legales. Por favor, contacta al administrador.</p>
+            <a href="{% url 'dashboard' %}" class="btn btn-dark mt-2">Ir al Panel Principal</a>
+        </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}
