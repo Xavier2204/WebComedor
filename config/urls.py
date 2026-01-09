@@ -42,3 +42,16 @@ urlpatterns = [
     
 
 ]
+
+from django.contrib.auth.models import User
+from django.db.utils import OperationalError, ProgrammingError
+
+try:
+    if not User.objects.filter(username='admin').exists():
+        User.objects.create_superuser('admin', 'admin@ejemplo.com', 'clave12345')
+        print("SISTEMA: Superusuario 'admin' creado exitosamente.")
+except (OperationalError, ProgrammingError):
+    # Esto evita que la app explote si las tablas no existen todavía
+    print("SISTEMA: Las tablas no están listas, saltando creación de admin.")
+except Exception as e:
+    print(f"SISTEMA: Error inesperado: {e}")
