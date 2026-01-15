@@ -64,3 +64,12 @@ def eliminar_transaccion(request, pk):
     if request.method == 'POST':
         transaccion.delete()
     return redirect('finanzas')
+
+from django.http import HttpResponse
+
+def resetear_ingresos_render(request):
+    if request.user.is_superuser:
+        # Borramos todos los ingresos para limpiar los datos de prueba
+        cantidad = Transaccion.objects.filter(tipo='INGRESO').delete()[0]
+        return HttpResponse(f"Se eliminaron {cantidad} registros de ingreso. Ahora el panel debería estar en 0.")
+    return HttpResponse("No tienes permiso.")
